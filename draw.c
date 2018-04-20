@@ -25,58 +25,57 @@ void swap(float a, float b){
   a = b;
   b = temp;
 }
-void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
-  int index;
+
+void scanline_convert( struct matrix *points, int index, screen s, zbuffer zb ) {
+  // black for now, pass color later!!
   color c;
   c.red = 0;
   c.green = 0;
   c.blue = 0;
-  for (index = 0; index < points->lastcol - 2; index+=3){
-    float y0, y1, y2;
-    y0 = points->m[1][index];
-    y1 = points->m[1][index+1];
-    y2 = points->m[1][index+2];
+  float y0, y1, y2;
+  y0 = points->m[1][index];
+  y1 = points->m[1][index+1];
+  y2 = points->m[1][index+2];
 
-    float x0, x1, x2;
-    x0 = points->m[0][index];
-    x1 = points->m[0][index+1];
-    x2 = points->m[0][index+2];
+  float x0, x1, x2;
+  x0 = points->m[0][index];
+  x1 = points->m[0][index+1];
+  x2 = points->m[0][index+2];
 
-    float slope_bt = (y2 - y0)/(x2 - x0);
-    float slope_bm = (y1 - y0)/(x1 - x0);
-    float slope_mt = (y2 - y1)/(x2 - x1);
-    // ordering the coordinates vertically; z0 being lowest
-    if (y0 > y2){
-      swap(y0, y2);
-    }
-    if (y0 > y1){
-      swap(y0, y1);
-    }
-    if (y1 > y2){
-      swap(y1, y2);
-    }
+  float slope_bt = (y2 - y0)/(x2 - x0);
+  float slope_bm = (y1 - y0)/(x1 - x0);
+  float slope_mt = (y2 - y1)/(x2 - x1);
+  // ordering the coordinates vertically; z0 being lowest
+  if (y0 > y2){
+    swap(y0, y2);
+  }
+  if (y0 > y1){
+    swap(y0, y1);
+  }
+  if (y1 > y2){
+    swap(y1, y2);
+  }
 
-    int current_y;
-    float delta_y, current_x_bt, current_x_bm, current_x_mt;
-    // first half of scan lines
-    for (current_y = y0; current_y < y1; current_y++){
-      delta_y = current_y - y0;
-      current_x_bt = delta_y/slope_bt + x0;
-      current_x_bm = delta_y/slope_bm + x0;
+  int current_y;
+  float delta_y, current_x_bt, current_x_bm, current_x_mt;
+  // first half of scan lines
+  for (current_y = y0; current_y < y1; current_y++){
+    delta_y = current_y - y0;
+    current_x_bt = delta_y/slope_bt + x0;
+    current_x_bm = delta_y/slope_bm + x0;
 
-      draw_line(current_x_bt, current_y, 0, current_x_bm, current_y, 0, s, zb, c);
-      // z's are 0 for now; CHANGE LATER!!!!
-    }
+    draw_line(current_x_bt, current_y, 0, current_x_bm, current_y, 0, s, zb, c);
+    // z's are 0 for now; CHANGE LATER!!!!
+  }
 
-    // other half of scan lines
-    for (current_y; current_y < y2; current_y++){
-      delta_y = current_y - y0;
-      current_x_bt = delta_y/slope_bt + x0;
-      current_x_mt = delta_y/slope_mt + x1;
+  // other half of scan lines
+  for (current_y = y1; current_y < y2; current_y++){
+    delta_y = current_y - y0;
+    current_x_bt = delta_y/slope_bt + x0;
+    current_x_mt = delta_y/slope_mt + x1;
 
-      draw_line(current_x_bt, current_y, 0, current_x_mt, current_y, 0, s, zb, c);
-      // z's are 0 for now; CHANGE LATER!!!!
-    }
+    draw_line(current_x_bt, current_y, 0, current_x_mt, current_y, 0, s, zb, c);
+    // z's are 0 for now; CHANGE LATER!!!!
   }
 }
 
@@ -124,9 +123,8 @@ void draw_polygons(struct matrix *polygons, screen s, zbuffer zb, color c ) {
   int point;
   double *normal;
 
-  scanline_convert(polygons, 0, s, zb);
   for (point=0; point < polygons->lastcol-2; point+=3) {
-
+    scanline_convert(polygons, point, s, zb);
     normal = calculate_normal(polygons, point);
 
     if ( normal[2] > 0 ) {
