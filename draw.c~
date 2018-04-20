@@ -65,7 +65,7 @@ void scanline_convert( struct matrix *points, int index, screen s, zbuffer zb ) 
     current_x_bm = delta_y/slope_bm + x0;
     printf("current x bottom to top: %f\ncurrent x bottom to middle: %f\n", current_x_bt, current_x_bm);
 
-    draw_line(current_x_bt, current_y, 0, current_x_bm, current_y, 0, s, zb, c);
+//    draw_line(current_x_bt, current_y, 0, current_x_bm, current_y, 0, s, zb, c);
     // z's are 0 for now; CHANGE LATER!!!!
   }
 
@@ -76,7 +76,7 @@ void scanline_convert( struct matrix *points, int index, screen s, zbuffer zb ) 
     current_x_mt = delta_y/slope_mt + x1;
     printf("current x bottom to top: %f\ncurrent x middle to top: %f\n", current_x_bt, current_x_mt);
 
-    draw_line(current_x_bt, current_y, 0, current_x_mt, current_y, 0, s, zb, c);
+//    draw_line(current_x_bt, current_y, 0, current_x_mt, current_y, 0, s, zb, c);
     // z's are 0 for now; CHANGE LATER!!!!
   }
 }
