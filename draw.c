@@ -99,15 +99,17 @@ void scanline_convert( struct matrix *points, int index, screen s, zbuffer zb ) 
   current_z_mt = z1;
 
   // second half of scan lines
-  for (current_y = y1; current_y < y2; current_y++){
-    draw_line(current_x_bt, current_y, current_z_bt, current_x_mt, current_y, current_z_mt, s, zb, c);
+	if (y1 != y2){
+		for (current_y = y1; current_y < y2; current_y++){
+	    draw_line(current_x_bt, current_y, current_z_bt, current_x_mt, current_y, current_z_mt, s, zb, c);
 
-    current_x_bt += 1/slope_bt;
-    current_x_mt += 1/slope_mt;
+	    current_x_bt += 1/slope_bt;
+	    current_x_mt += 1/slope_mt;
 
-    current_z_bt += 1/slope_bt_z;
-    current_z_mt += 1/slope_mt_z;
-  }
+	    current_z_bt += 1/slope_bt_z;
+	    current_z_mt += 1/slope_mt_z;
+	  }
+	}
 }
 
 /*======== void add_polygon() ==========
@@ -158,7 +160,7 @@ void draw_polygons(struct matrix *polygons, screen s, zbuffer zb, color c ) {
 
     normal = calculate_normal(polygons, point);
 
-    if ( normal[2] > 0 ) {
+    if ( normal[2] > 0) {
 			scanline_convert(polygons, point, s, zb);
       // draw_line( polygons->m[0][point],
       //            polygons->m[1][point],
