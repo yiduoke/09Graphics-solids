@@ -51,16 +51,16 @@ void scanline_convert( struct matrix *points, int index, screen s, zbuffer zb ) 
   z2 = points->m[2][index+2];
 
   // ordering the coordinates vertically; y0 being lowest
-  if (y0 > y2){
-    swap(&x0, &x2);
-    swap(&y0, &y2);
-    swap(&z0, &z2);
-  }
   if (y0 > y1){
     swap(&x0, &x1);
     swap(&y0, &y1);
     swap(&z0, &z1);
   }
+	if (y0 > y2){
+		swap(&x0, &x2);
+		swap(&y0, &y2);
+		swap(&z0, &z2);
+	}
   if (y1 > y2){
     swap(&x1, &x2);
     swap(&y1, &y2);
@@ -618,7 +618,6 @@ void draw_line(int x0, int y0, double z0,
     y1 = yt;
   }
 
-	float z_slope = (z1 - z0)/(x1 - x0);
   x = x0;
   y = y0;
   A = 2 * (y1 - y0);
@@ -667,6 +666,7 @@ void draw_line(int x0, int y0, double z0,
   }
 
 	float z_current = z0;
+	float z_slope = (z1 - z0)/(loop_end - loop_start);
   while ( loop_start < loop_end ) {
 
     plot( s, zb, c, x, y, z_current);
