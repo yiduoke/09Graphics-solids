@@ -617,6 +617,7 @@ void draw_line(int x0, int y0, double z0,
     y1 = yt;
   }
 
+	float z_slope = (z1 - z0)/(x1 - x0);
   x = x0;
   y = y0;
   A = 2 * (y1 - y0);
@@ -664,9 +665,10 @@ void draw_line(int x0, int y0, double z0,
     }
   }
 
+	float z_current = z0;
   while ( loop_start < loop_end ) {
 
-    plot( s, zb, c, x, y, 0);
+    plot( s, zb, c, x, y, z0);
     if ( (wide && ((A > 0 && d > 0) ||
                    (A < 0 && d < 0)))
          ||
@@ -682,6 +684,7 @@ void draw_line(int x0, int y0, double z0,
       d+= d_east;
     }
     loop_start++;
+		z_current += z_slope;
   } //end drawing loop
-  plot( s, zb, c, x1, y1, 0 );
+  plot( s, zb, c, x1, y1, z1 );
 } //end draw_line

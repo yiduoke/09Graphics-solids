@@ -9,6 +9,7 @@ for red, green and blue respectively
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <math.h>
 
 #include "ml6.h"
 #include "display.h"
@@ -31,8 +32,10 @@ pixel 0, 0 located at the lower left corner of the screen
 ====================*/
 void plot(screen s, zbuffer zb, color c, int x, int y, double z) {
   int newy = YRES - 1 - y;
-  if ( x >= 0 && x < XRES && newy >=0 && newy < YRES )
+  if ( x >= 0 && x < XRES && newy >=0 && newy < YRES && zb[x][newy] < z){
     s[x][newy] = c;
+    zb[x][newy] = z;
+  }
 }
 
 /*======== void clear_screen() ==========
@@ -69,7 +72,7 @@ void clear_zbuffer( zbuffer zb ) {
 
   for ( y=0; y < YRES; y++ )
     for ( x=0; x < XRES; x++)
-      zb[x][y] = LONG_MIN;
+      zb[x][y] = -INFINITY;
 }
 
 /*======== void save_ppm() ==========
