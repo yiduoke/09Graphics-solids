@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "ml6.h"
 #include "display.h"
@@ -19,65 +20,93 @@
 
   Color should be set differently for each polygon.
   ====================*/
-  
-void swap(float a, float b){
+
+void swap(float *a, float *b){
 	float temp;
-	temp = a;
-	a = b;
-	b = temp;
+	temp = *a;
+	*a = *b;
+	*b = temp;
 }
+
 void scanline_convert( struct matrix *points, int index, screen s, zbuffer zb ) {
   // black for now, pass color later!!
   color c;
-  c.red = 0;
-  c.green = 0;
-  c.blue = 0;
-  float y0, y1, y2;
-  y0 = points->m[1][index];
-  y1 = points->m[1][index+1];
-  y2 = points->m[1][index+2];
+  c.red = rand()%255;
+  c.green = index%255;
+  c.blue = rand()%255;
 
   float x0, x1, x2;
   x0 = points->m[0][index];
   x1 = points->m[0][index+1];
   x2 = points->m[0][index+2];
 
+  float y0, y1, y2;
+  y0 = points->m[1][index];
+  y1 = points->m[1][index+1];
+  y2 = points->m[1][index+2];
+
+  float z0, z1, z2;
+  z0 = points->m[2][index];
+  z1 = points->m[2][index+1];
+  z2 = points->m[2][index+2];
+
+  // ordering the coordinates vertically; y0 being lowest
+  if (y0 > y2){
+    swap(&x0, &x2);
+    swap(&y0, &y2);
+    swap(&z0, &z2);
+  }
+  if (y0 > y1){
+    swap(&x0, &x1);
+    swap(&y0, &y1);
+    swap(&z0, &z1);
+  }
+  if (y1 > y2){
+    swap(&x1, &x2);
+    swap(&y1, &y2);
+    swap(&z1, &z2);
+  }
+
   float slope_bt = (y2 - y0)/(x2 - x0);
   float slope_bm = (y1 - y0)/(x1 - x0);
   float slope_mt = (y2 - y1)/(x2 - x1);
-  // ordering the coordinates vertically; z0 being lowest
-  if (y0 > y2){
-    swap(y0, y2);
-  }
-  if (y0 > y1){
-    swap(y0, y1);
-  }
-  if (y1 > y2){
-    swap(y1, y2);
-  }
 
+  float slope_bt_z = (y2 - y0)/(z2 - z0);
+  float slope_bm_z = (y1 - y0)/(z1 - z0);
+  float slope_mt_z = (y2 - y1)/(z2 - z1);
+
+  printf("lowest to highest: %f %f %f\n", y0, y1, y2);
   int current_y;
-  float delta_y, current_x_bt, current_x_bm, current_x_mt;
+  float current_x_bt, current_x_bm, current_x_mt,current_z_bt, current_z_bm, current_z_mt;
   // first half of scan lines
-  for (current_y = y0; current_y < y1; current_y++){
-    delta_y = current_y - y0;
-    current_x_bt = delta_y/slope_bt + x0;
-    current_x_bm = delta_y/slope_bm + x0;
-    printf("current x bottom to top: %f\ncurrent x bottom to middle: %f\n", current_x_bt, current_x_bm);
+  current_x_bt = x0;
+  current_x_bm = x0;
 
-    draw_line(current_x_bt, current_y, 0, current_x_bm, current_y, 0, s, zb, c);
-    // z's are 0 for now; CHANGE LATER!!!!
+  current_z_bt = z0;
+  current_z_bm = z0;
+
+  for (current_y = y0; current_y < y1; current_y++){
+    draw_line(current_x_bt, current_y, current_z_bt, current_x_bm, current_y, current_z_bm, s, zb, c);
+
+    current_x_bt += 1/slope_bt;
+    current_x_bm += 1/slope_bm;
+
+    current_z_bt += 1/slope_bt_z;
+    current_z_bm += 1/slope_bm_z;
   }
 
-  // other half of scan lines
-  for (current_y = y1; current_y < y2; current_y++){
-    delta_y = current_y - y0;
-    current_x_bt = delta_y/slope_bt + x0;
-    current_x_mt = delta_y/slope_mt + x1;
-    printf("current x bottom to top: %f\ncurrent x middle to top: %f\n", current_x_bt, current_x_mt);
+  current_x_mt = x1;
+  current_z_mt = z1;
 
-    draw_line(current_x_bt, current_y, 0, current_x_mt, current_y, 0, s, zb, c);
-    // z's are 0 for now; CHANGE LATER!!!!
+  // second half of scan lines
+  for (current_y; current_y < y2; current_y++){
+    draw_line(current_x_bt, current_y, current_z_bt, current_x_mt, current_y, current_z_mt, s, zb, c);
+
+    current_x_bt += 1/slope_bt;
+    current_x_mt += 1/slope_mt;
+
+    current_z_bt += 1/slope_bt_z;
+    current_z_mt += 1/slope_mt_z;
   }
 }
 
