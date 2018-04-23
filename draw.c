@@ -76,7 +76,7 @@ void scanline_convert( struct matrix *points, int index, screen s, zbuffer zb ) 
   float slope_mt_z = (y2 - y1)/(z2 - z1);
 
   printf("lowest to highest: %f %f %f\n", y0, y1, y2);
-  int current_y;
+  float current_y;
   float current_x_bt, current_x_bm, current_x_mt,current_z_bt, current_z_bm, current_z_mt;
   // first half of scan lines
   current_x_bt = x0;
@@ -99,17 +99,15 @@ void scanline_convert( struct matrix *points, int index, screen s, zbuffer zb ) 
   current_z_mt = z1;
 
   // second half of scan lines
-	if (y1 != y2){
-		for (current_y = y1; current_y < y2; current_y++){
-	    draw_line(current_x_bt, current_y, current_z_bt, current_x_mt, current_y, current_z_mt, s, zb, c);
+	for (current_y = y1; current_y < y2; current_y++){
+    draw_line(current_x_bt, current_y, current_z_bt, current_x_mt, current_y, current_z_mt, s, zb, c);
 
-	    current_x_bt += 1/slope_bt;
-	    current_x_mt += 1/slope_mt;
+    current_x_bt += 1/slope_bt;
+    current_x_mt += 1/slope_mt;
 
-	    current_z_bt += 1/slope_bt_z;
-	    current_z_mt += 1/slope_mt_z;
-	  }
-	}
+    current_z_bt += 1/slope_bt_z;
+    current_z_mt += 1/slope_mt_z;
+  }
 }
 
 /*======== void add_polygon() ==========
@@ -201,37 +199,37 @@ void draw_polygons(struct matrix *polygons, screen s, zbuffer zb, color c ) {
   upper-left corner is (x, y, z) with width,
   height and depth dimensions.
   ====================*/
-void add_box( struct matrix * polygons,
-              double x, double y, double z,
-              double width, double height, double depth ) {
+	void add_box( struct matrix * polygons,
+	              double x, double y, double z,
+	              double width, double height, double depth ) {
 
-  double x1, y1, z1;
-  x1 = x+width;
-  y1 = y-height;
-  z1 = z-depth;
+	  double x1, y1, z1;
+	  x1 = x+width;
+	  y1 = y-height;
+	  z1 = z-depth;
 
-  //front
-  add_polygon(polygons, x, y, z, x1, y1, z, x1, y, z);
-  add_polygon(polygons, x, y, z, x, y1, z, x1, y1, z);
+	  //front
+	  add_polygon(polygons, x, y, z, x1, y1, z, x1, y, z);
+	  add_polygon(polygons, x, y, z, x, y1, z, x1, y1, z);
 
-  //back
-  add_polygon(polygons, x1, y, z1, x, y1, z1, x, y, z1);
-  add_polygon(polygons, x1, y, z1, x1, y1, z1, x, y1, z1);
+	  //back
+	  add_polygon(polygons, x1, y, z1, x, y1, z1, x, y, z1);
+	  add_polygon(polygons, x1, y, z1, x1, y1, z1, x, y1, z1);
 
-  //right side
-  add_polygon(polygons, x1, y, z, x1, y1, z1, x1, y, z1);
-  add_polygon(polygons, x1, y, z, x1, y1, z, x1, y1, z1);
-  //left side
-  add_polygon(polygons, x, y, z1, x, y1, z, x, y, z);
-  add_polygon(polygons, x, y, z1, x, y1, z1, x, y1, z);
+	  //right side
+	  add_polygon(polygons, x1, y, z, x1, y1, z1, x1, y, z1);
+	  add_polygon(polygons, x1, y, z, x1, y1, z, x1, y1, z1);
+	  //left side
+	  add_polygon(polygons, x, y, z1, x, y1, z, x, y, z);
+	  add_polygon(polygons, x, y, z1, x, y1, z1, x, y1, z);
 
-  //top
-  add_polygon(polygons, x, y, z1, x1, y, z, x1, y, z1);
-  add_polygon(polygons, x, y, z1, x, y, z, x1, y, z);
-  //bottom
-  add_polygon(polygons, x, y1, z, x1, y1, z1, x1, y1, z);
-  add_polygon(polygons, x, y1, z, x, y1, z1, x1, y1, z1);
-}//end add_box
+	  //top
+	  add_polygon(polygons, x, y, z1, x1, y, z, x1, y, z1);
+	  add_polygon(polygons, x, y, z1, x, y, z, x1, y, z);
+	  //bottom
+	  add_polygon(polygons, x, y1, z, x1, y1, z1, x1, y1, z);
+	  add_polygon(polygons, x, y1, z, x, y1, z1, x1, y1, z1);
+	}//end add_box
 
 /*======== void add_sphere() ==========
   Inputs:   struct matrix * points
