@@ -271,7 +271,7 @@ void add_sphere( struct matrix * edges,
       p3 = (p0+step) % (step * (step-1));
 
       //printf("p0: %d\tp1: %d\tp2: %d\tp3: %d\n", p0, p1, p2, p3);
-      if (longt <= step - 2)
+      if (longt < step - 2)
         add_polygon( edges, points->m[0][p0],
                      points->m[1][p0],
                      points->m[2][p0],
