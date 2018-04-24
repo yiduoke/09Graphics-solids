@@ -75,7 +75,7 @@ void scanline_convert( struct matrix *points, int index, screen s, zbuffer zb ) 
   float slope_bm_z = (y1 - y0)/(z1 - z0);
   float slope_mt_z = (y2 - y1)/(z2 - z1);
 
-  printf("lowest to highest: %f %f %f\n", y0, y1, y2);
+  // printf("lowest to highest: %f %f %f\n", y0, y1, y2);
   float current_y;
   float current_x_bt, current_x_bm, current_x_mt,current_z_bt, current_z_bm, current_z_mt;
   // first half of scan lines
@@ -605,15 +605,19 @@ void draw_line(int x0, int y0, double z0,
   int loop_start, loop_end;
 
   //swap points if going right -> left
-  int xt, yt;
+  int xt, yt, zt;
   if (x0 > x1) {
     xt = x0;
     yt = y0;
+		zt = z0;
+
     x0 = x1;
     y0 = y1;
     z0 = z1;
+
     x1 = xt;
     y1 = yt;
+		z1 = zt;
   }
 
   x = x0;
